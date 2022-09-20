@@ -22,10 +22,10 @@ print(device)
 
 
 # %%
-model_path = r'D:\Cartoonify\ImagesCartoonify\checkpoints\trained_netG.pth'
+model_path = r'../ImagesCartoonify/checkpoints/trained_netG.pth'
 generator = Generator().to(device)
 
-generator.load_state_dict(torch.load(model_path))
+generator.load_state_dict(torch.load(model_path,map_location=torch.device(device)))
 
 
 # %%
