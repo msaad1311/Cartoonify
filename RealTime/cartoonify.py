@@ -51,7 +51,8 @@ out = cv2.VideoWriter('output.mp4', fourcc, 15, size)
 t_end = time.time() + 40
 
 print('Start cartoonifying...')
-while(time.time()<t_end):
+i = 0
+while(i<15):
     
     ret, frame_np = cap.read()
     frame_np = cv2.cvtColor(frame_np, cv2.COLOR_BGR2RGB)
@@ -77,6 +78,7 @@ while(time.time()<t_end):
         gc.collect()
         torch.cuda.empty_cache()
         break
+    i+=1
 cv2.destroyAllWindows()
 out.release()
 cap.release()
