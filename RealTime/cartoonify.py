@@ -4,7 +4,7 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import torch.nn.functional as F
 
-import utils
+from utils.model_retrival import get_model
 from models.generator import Generator
 
 import numpy as np
@@ -15,13 +15,13 @@ import os
 import time
 
 
-
+get_model()
 
 device = 'cuda' if torch.cuda.is_available() else  'cpu'
 print(device)
 
 
-model_path = r'../ImagesCartoonify/checkpoints/trained_netG.pth'
+model_path = r'models/trained_netG.pth'
 generator = Generator().to(device)
 
 generator.load_state_dict(torch.load(model_path,map_location=torch.device(device)))
@@ -44,9 +44,6 @@ print('Init WebCam...')
 cap = cv2.VideoCapture(1)
 size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
         int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-# width = 1280 #int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
-# height = 720 #int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
-# size = (width, height)
 
 fourcc = cv2.VideoWriter_fourcc(*'MP4V')
 out = cv2.VideoWriter('output.mp4', fourcc, 15, size)
