@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+    <py-env>
+        - matplotlib
+        - numpy
+        - opencv-python
+        - paths:
+            - chair_man.jpg
+      </py-env>
+    
+    
+      <py-config>
+        - autoclose_loader: true
+        - runtimes:
+          -
+            src: "https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"
+            name: pyodide-0.20
+            lang: python
+            
+      </py-config>
+</head>
+<body>
+    <py-script>
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import cv2
+
+    image = cv2.imread("chair_man.jpg")
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    row, col = 1, 2
+    fig, axs = plt.subplots(row, col, figsize=(15, 10))
+    fig.tight_layout()
+    
+    axs[0].imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    axs[0].set_title('Original')
+
+    axs[1].imshow(cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB))
+    axs[1].set_title('Grayscale')
+
+    fig.show()
+    </py-script>
+
+    
+</body>
+</html>
+
+
