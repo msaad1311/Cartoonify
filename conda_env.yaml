@@ -1,0 +1,51 @@
+name: cartoons
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - openssl
+  - ncurses
+  - nest-asyncio
+  - wcwidth
+  - stack_data
+  - pexpect
+  - xz
+  - jedi
+  - tzdata
+  - ca-certificates
+  - asttokens
+  - pyzmq
+  - zlib
+  - debugpy
+  - libsodium
+  - decorator
+  - entrypoints
+  - libffi
+  - backcall
+  - jupyter_client
+  - executing
+  - prompt-toolkit
+  - appnope
+  - ipython
+  - pygments
+  - pickleshare
+  - matplotlib-inline
+  - setuptools
+  - readline
+  - pure_eval
+  - jupyter_core
+  - traitlets
+  - certifi
+  - tk
+  - python-dateutil
+  - parso
+  - pip
+  - zeromq
+  - six
+  - libcxx
+  - tornado
+  - ptyprocess
+  - sqlite
+  - wheel
+  - ipykernel
+prefix: /Users/saadmuhammad/opt/anaconda3/envs/cartoons

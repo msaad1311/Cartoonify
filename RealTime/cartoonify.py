@@ -1,12 +1,10 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
+
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
 import torch.nn.functional as F
 
-import utils
+from utils.model_retrival import get_model
 from models.generator import Generator
 
 import numpy as np
@@ -14,21 +12,22 @@ import gc
 import cv2
 import matplotlib.pyplot as plt
 import os
+import time
 
 
-# %%
+get_model()
+
 device = 'cuda' if torch.cuda.is_available() else  'cpu'
 print(device)
 
 
-# %%
-model_path = r'D:\Cartoonify\ImagesCartoonify\checkpoints\trained_netG.pth'
+model_path = r'models/trained_netG.pth'
 generator = Generator().to(device)
 
-generator.load_state_dict(torch.load(model_path))
+generator.load_state_dict(torch.load(model_path,map_location=torch.device(device)))
 
 
-# %%
+
 preprocess = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -40,16 +39,24 @@ inv_normalize = transforms.Normalize(
 )
 
 
-# %%
+
 print('Init WebCam...')
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+cap = cv2.VideoCapture(1)
+size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+        int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+
+fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+out = cv2.VideoWriter('output.mp4', fourcc, 15, size)
+
+t_end = time.time() + 40
 
 print('Start cartoonifying...')
-while(True):
-    _, frame_np = cap.read()
+i = 0
+while(i<15):
+    
+    ret, frame_np = cap.read()
     frame_np = cv2.cvtColor(frame_np, cv2.COLOR_BGR2RGB)
+    
     frame_np = cv2.resize(frame_np, (910, 512), cv2.INTER_AREA)
     frame_np = frame_np[:, 120:792, :]
     frame_np = cv2.flip(frame_np, 1)
@@ -58,20 +65,23 @@ while(True):
     with torch.no_grad():
         pred = generator(tensor_img)
     generator.train()
-    pred = inv_normalize(pred).squeeze(0).permute(1,2,0).cpu().numpy()
-    pred = cv2.cvtColor(pred,cv2.COLOR_RGB2BGR)
     
-    cv2.imshow('Cartoonizer - WebCam [Press \'Q\' To Exit]', pred)
+    pred = inv_normalize(pred).squeeze(0).permute(1,2,0).cpu().numpy()
+    pred_normalized = (pred - np.min(pred))/np.ptp(pred)
+    print(pred_normalized.min(),pred_normalized.max())
+    pred_resized = cv2.resize(pred_normalized,size,cv2.INTER_AREA)
+    pred_resized = cv2.cvtColor(pred_resized,cv2.COLOR_BGR2RGB)
+    # pred = cv2.flip(pred,0)
+    out.write(np.uint8(pred_resized*255))
+    cv2.imshow('Cartoonizer - WebCam [Press \'Q\' To Exit]', pred_resized)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         gc.collect()
         torch.cuda.empty_cache()
         break
+    i+=1
 cv2.destroyAllWindows()
+out.release()
 cap.release()
 print('Exit...')
-
-
-# %%
-
 
 
