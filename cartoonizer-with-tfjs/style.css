@@ -1,0 +1,55 @@
+.home {
+  background-image: url(assets/wave.svg);
+  background-repeat: no-repeat;
+  background-position: top center;
+}
+
+.placeholder {
+  background: #f6f7f8;
+  min-height: 300px;
+}
+
+.btn-xs {
+  padding: .125rem .25rem;
+  font-size: .9rem;
+  line-height: 1.5;
+  border-radius: .2rem;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #101749;
+  border-color: #101749;
+}
+
+.btn-primary:hover {
+  color: #fff;
+  background-color: #090d2a;
+  border-color: #070a1f;
+}
+
+.sm2 {
+  font-size: 66.66667% !important;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.loader {
+  border: 16px solid #0000006e; /* Light grey */
+  border-top: 16px solid #0d22e0; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  position: absolute;
+  left: 36%;
+  top:30%;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
