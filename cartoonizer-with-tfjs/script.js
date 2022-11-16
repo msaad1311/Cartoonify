@@ -1,14 +1,30 @@
+
+//  Accessing the webcam
+var video = document.querySelector("#videoElement");
+
+if (navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+    })
+    .catch(function (err0r) {
+      console.log("Something went wrong!");
+    });
+}
+
+// cartoonization intialization
 tf.setBackend('wasm').then(() => runModel())
 
 const APP = {
   model: null, size: 256,
-  source: document.getElementById('source'),
+  source: document.getElementById('videoElement'),
   canvas: document.getElementById('result'),
   status: document.getElementById('status'),
   download: document.getElementById('download'),
   $: n => document.getElementById(n),
   path: './models/CartoonGAN/web-uint8/model.json'
 }
+
 
 const runModel = async () => {
   APP.model = await tf.loadGraphModel(APP.path)
@@ -77,16 +93,26 @@ function scaleCanvas(pct=2) {
   APP.download.href = canvas.toDataURL('image/jpeg')
 }
 
-document.getElementById('file').addEventListener('change', evt => {
-  evt.target.files.forEach(f => {
-    if (!f.type.match('image.*')) { return }
-    let reader = new FileReader()
-    reader.onload = e => { APP.source.src = e.target.result }
-    reader.readAsDataURL(f)
-  })
-  evt.target.value = null
-})
+document.getElementById('videoElement').addEventListener('play', function () {
+  var $this = this; //cache
+  (function loop() {
+      if (!$this.paused && !$this.ended) {
+        APP.canvas.getContext('2d').drawImage($this, 0, 0);
+          setTimeout(loop, 1000 / 30); // drawing at 30fps
+      }
+  })();
+}, 0);
 
-document.querySelectorAll('#examples img').forEach(
-  img => img.addEventListener('click', evt => { APP.source.src = img.src })
-)
+// document.getElementById('file').addEventListener('change', evt => {
+//   evt.target.files.forEach(f => {
+//     if (!f.type.match('image.*')) { return }
+//     let reader = new FileReader()
+//     reader.onload = e => { APP.source.src = e.target.result }
+//     reader.readAsDataURL(f)
+//   })
+//   evt.target.value = null
+// })
+
+// document.querySelectorAll('#examples img').forEach(
+//   img => img.addEventListener('click', evt => { APP.source.src = img.src })
+// )
