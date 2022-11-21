@@ -12,7 +12,8 @@ var photo = document.getElementById('photo');
 var streaming = false;
 
 var canvas = document.getElementById("result");
-var ctx = canvas.getContext("2d");
+let context;
+var canvas_new = document.getElementById("result_new");
 
 if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({video: true})
@@ -25,49 +26,31 @@ if (navigator.mediaDevices.getUserMedia) {
         });
 }
 setInterval(takepicture,10);
-// function startup(){
-// video.addEventListener('canplay', function(ev){
-//   if (!streaming) {
-//     height = video.videoHeight / (video.videoWidth/width);
-  
-//     // Firefox currently has a bug where the height can't be read from
-//     // the video, so we will make assumptions if this happens.
-  
-//     if (isNaN(height)) {
-//       height = width / (4/3);
-//     }
-  
-//     video.setAttribute('width', width);
-//     video.setAttribute('height', height);
-//     canvas.setAttribute('width', width);
-//     canvas.setAttribute('height', height);
-//     streaming = true;
-//     console.log(height,width)
-//     takepicture();
-//   }
-// }, false);
-// }
+
 
 function takepicture() {
-  var context = canvas.getContext('2d');
+  context = canvas.getContext('2d');
+  var context_new = canvas_new.getContext('2d');
   if (width && height) {
-    canvas.width = width;
-    canvas.height = height;
-    context.drawImage(video, 0, 0, width, height);
-  
-    var data = canvas.toDataURL('image/png');
-    // photo.setAttribute('src', data);
+    canvas_new.width = width;
+    canvas_new.height = height;
+    // canvas.width = width
+    // canvas.height = height
+    // context.drawImage(video, 0, 0, width, height);
+    context_new.drawImage(video, 0, 0, width, height);
+    var data = canvas_new.toDataURL('image/png');
+    photo.setAttribute('src', data);
   } else {
     console.log('do nothing')
     // clearphoto();
   }
 }
 
-console.log(canvas.toDataURL('image/png'))
+
 
 const APP = {
   model: null, size: 256,
-  source: canvas.toDataURL('image/png'), //document.getElementById('videoElement'),
+  source: document.getElementById('photo'),//canvas.toDataURL('image/png'), //document.getElementById('videoElement'),
   canvas: document.getElementById('result'),
   status: document.getElementById('status'),
   download: document.getElementById('download'),
@@ -82,15 +65,9 @@ const runModel = async () => {
   APP.model = await tf.loadGraphModel(APP.path)
   // warm up
   APP.model.predict(tf.zeros([1, 1, 1, 3])).dispose()
-  // console.log("hello",data)
   predict(APP.source)
   APP.source.onload = () => {
-    setTimeout(() => {
-      APP.status.classList.remove('d-none')
-      APP.canvas.classList.add('d-none')
-      APP.canvas.classList.remove('d-block')
-    }, 0)
-    setTimeout(() => { predict(APP.source) }, 50)
+    setTimeout(() => { predict(APP.source) }, 1)
   }
 }
 
@@ -121,28 +98,33 @@ function normalize(img) {
   return img.sub(offset).div(offset)
 }
 
-function draw(img, size) {
-  const scaleby = size[0] / img.shape[0]
-  tf.browser.toPixels(img, APP.canvas)
-  APP.canvas.classList.remove('d-none')
-  APP.canvas.classList.add('d-block')
-  APP.status.classList.add('d-none')
-  setTimeout(() => scaleCanvas(scaleby), 50)
+async function draw(img, size) {
+  console.log(img)
+  canvas.width = size[1]
+  canvas.height = size[0]
+  console.log(canvas.width,canvas.height)
+  console.log(video.videoWidth,video.videoHeight)
+  await tf.browser.toPixels(img, canvas);
+
+  // context.drawImage(img, 0, 0, width, height);
+  // const scaleby = size[0] / img.shape[0]
+  // tf.browser.toPixels(img, APP.canvas)
+  // setTimeout(() => scaleCanvas(scaleby), 10)
 }
 
-function scaleCanvas(pct=2) {
+function scaleCanvas(pct=10) {
   const canvas = APP.$('result')
   const tmpcan = document.createElement('canvas')
   const tctx = tmpcan.getContext('2d')
-  const cw = canvas.width
-  const ch = canvas.height
+  const cw = canvas_new.width
+  const ch = canvas_new.height
   tmpcan.width = cw
   tmpcan.height = ch
   tctx.drawImage(canvas, 0, 0)
   canvas.width *= pct
   canvas.height *= pct
   const ctx = canvas.getContext('2d')
-  ctx.drawImage(tmpcan, 0, 0, cw, ch, 0, 0, cw*pct, ch*pct)
+  // ctx.drawImage(tmpcan, 0, 0, cw, ch, 0, 0, cw*pct, ch*pct)
   APP.download.href = canvas.toDataURL('image/jpeg')
 }
 
