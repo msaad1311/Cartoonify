@@ -43,7 +43,8 @@
           </label>
           <span>or Try <a href="#examples">below examples</a></span>
         </div>
-        <img id="source" class="d-block img-fluid mx-auto" src="./assets/fedal.jpg"></img>
+        <video class="d-block img-fluid mx-auto" id="videoElement" autoplay></video>
+        <!-- <img id="source" class="d-block img-fluid mx-auto" src="./assets/fedal.jpg"></img> -->
         <div id="examples" class="mt-2">
           <span class="sm2">Click on the images to try</span>
           <div class="row px-3">
@@ -61,15 +62,15 @@
           <h5 class="card-title">Cartoonized Image</h5>
           <a id="download" class="btn btn-xs btn-primary px-2" download="cartoon.jpeg" href="">Download</a>
         </div>
-        <canvas id="result" class="d-none mx-auto"></canvas>
-        <div id="status" class="placeholder text-center text-monospace pt-4">
-          <div class="loader"></div>
-        </div>
+        <canvas id="result" class="d-block img-fluid mx-auto"></canvas>
+        
       </div>
     </div>
   </div>
-  
-
+  <div class="output">
+    <img id="photo" alt="The screen capture will appear in this box."> 
+  </div>
+  <canvas id="result_new" class="output"></canvas>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script>
   <script async src="script.js"></script>
