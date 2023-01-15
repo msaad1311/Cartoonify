@@ -14,6 +14,8 @@ video.addEventListener('loadedmetadata', function(e){
 });
 
 
+
+
 if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({video: true})
         .then(function(stream) {
@@ -80,9 +82,11 @@ async function predict(imgElement) {
   const result = await APP.model.predict({ 'input_photo:0': img })
   const timer = performance.now() - t0
   let img_out = await result.squeeze().sub(tf.scalar(-1)).div(tf.scalar(2)).clipByValue(0, 1)
-  const pad = Math.round(Math.abs(w - h) / Math.max(w, h) * APP.size)
+  console.log('image_out first',img_out.shape)
+  const pad =  Math.round(Math.abs(w - h) / Math.max(w, h) * APP.size)
   const slice = (w > h) ? [0, pad, 0] : [pad, 0, 0]
   img_out = img_out.slice(slice)
+  console.log('image_out second',img_out.shape,img_out)
   draw(img_out, shape)
   console.log(Math.round(timer / 1000 * 10) / 10)
 }
@@ -104,7 +108,10 @@ async function draw(img, size) {
   canvas.height = 128
   // console.log(canvas.width,canvas.height)
   // console.log(video.videoWidth,video.videoHeight)
-  await tf.browser.toPixels(img, canvas);
+  resized = tf.image.resizeBilinear(img, [height, width])
+
+  console.log(resized)
+  await tf.browser.toPixels(resized, canvas);
 
   // context.drawImage(img, 0, 0, width, height);
   // const scaleby = size[0] / img.shape[0]
